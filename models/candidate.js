@@ -1,7 +1,9 @@
 const db = require('../db');
 const cuid = require('cuid')
+
 module.exports = {
     create,
+    getOne,
     getAll
 }
 
@@ -13,7 +15,8 @@ const defStatus = {
 const candidateSchema = new db.Schema({
     _id: {type : String,default: cuid},
     name : {type : String,required:true},
-    status : {type : Object , default : defStatus}
+    status : {type : Object , default : defStatus},
+    nextInterview : {type : Object,default : {}}
 })
 
 const Candidate = db.model("Candidate",candidateSchema);
@@ -41,17 +44,31 @@ async function create(){
       
       for (let i = 0; i < 60; i++) {
         const name = generateRandomName();
-        const student =  new Candidate({
-          name: name,
-          status: Object.assign({}, status),
-        });
+
+        const obj = {
+          name : name,
+          status : status,
+        }
+        const student =  new Candidate(obj);
         await student.save();
     
       }
 }
 
-async function getAll(){
-    const data = await Candidate.find();
+async function getAll(interviewerType){
 
+
+    let data = await Candidate.find();
+   
+    if(interviewerType)
+      data = data.filter(d => (d.status[interviewerType] === 2));
+    
+    data = data.filter(d => (Object.keys(d.nextInterview).length === 0));
     return data;
+}
+
+async function getOne(candidateId){
+  let data = await Candidate.findById(candidateId);
+
+  return data;
 }

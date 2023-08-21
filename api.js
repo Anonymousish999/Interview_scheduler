@@ -6,7 +6,10 @@ module.exports = {
     getInterviewerByEmail,
     getAllCandidate,
     fixInterview,
-    setSlotUnavailable
+    setSlotUnavailable,
+    acceptInvitation,
+    rejectInvitation
+
 }
 
 async function createInterviewer(req,res){
@@ -43,7 +46,8 @@ async function getInterviewerByEmail(req,res){
 
 async function getAllCandidate(req,res){
     try {
-        const data = await Candidate.getAll();
+    
+        const data = await Candidate.getAll(req.query.type);
         res.json(data);
     }
     catch(err) {
@@ -65,13 +69,37 @@ async function fixInterview(req,res){
 async function setSlotUnavailable(req,res){
     try{
         const {email,timeSlot} = req.body;
-        console.log(email)
+        console.log(email,timeSlot)
 
         const data = await Interviewer.setUnavailable(email,timeSlot);
 
         res.json(data);
     }
     catch (err){
+        res.json(err);
+    }
+}
+
+async function acceptInvitation(req,res){
+    try {
+        const { email , timeSlot}  = req.body;
+
+        const data = await Interviewer.acceptInvitation(email,timeSlot);
+        res.json(data);
+    }   
+    catch(err){
+        res.json(err);
+    }
+}
+
+async function rejectInvitation(req,res){
+    try {
+        const { email , timeSlot}  = req.body;
+
+        const data = await Interviewer.rejectInvitation(email,timeSlot);
+        res.json(data);
+    }   
+    catch(err){
         res.json(err);
     }
 }
