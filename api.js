@@ -9,7 +9,9 @@ module.exports = {
     setSlotUnavailable,
     acceptInvitation,
     rejectInvitation,
-    candidateVerdict
+    candidateVerdict,
+    smartFunction,
+    uploadCandidates
 
 }
 
@@ -47,8 +49,8 @@ async function getInterviewerByEmail(req,res){
 
 async function getAllCandidate(req,res){
     try {
-    
-        const data = await Candidate.getAll(req.query.type);
+
+        const data = await Candidate.getAll(req.query.type,req.query.all);
         res.json(data);
     }
     catch(err) {
@@ -115,5 +117,32 @@ async function candidateVerdict(req ,res){
     }
     catch(err){
         res.json(err);
+    }
+}
+
+
+async function smartFunction(req,res){
+    try {
+        const {currentTime} = req.body;
+
+        await Interviewer.recommend(currentTime);
+        console.log('DONEEE --------------------------------------')
+        res.json('success');
+
+
+    }
+    catch(err){
+        res.json(err);
+    }
+}
+
+async function uploadCandidates(req,res){
+    try{
+        await Candidate.upload();
+
+        res.json("success");
+    }
+    catch(err){
+        res.json(err)
     }
 }
