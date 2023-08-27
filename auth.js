@@ -25,6 +25,8 @@ async function login(req, res, next) {
     req.body.email === "admin" && req.body.password === adminPassword;
 
   // make token
+  console.log(req.body.email,req.body.password,adminPassword)
+  console.log(isAdmin);
   const data = await Interviewer.get(req.body.email);
   if (!data && !isAdmin) {
     throw Object.assign(new Error("Wrong password"), { statusCode: 401 });
